@@ -4,19 +4,15 @@ package com.taldaapi.br.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "user")
+@Table(name = "usuarios")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     private String nome;
-
     private String email;
-
     private String status;
-
     private String senha;
 
     // Getters e setters para os campos da entidade User

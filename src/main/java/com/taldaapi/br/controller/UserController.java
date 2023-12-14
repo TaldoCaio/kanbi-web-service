@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,8 +19,7 @@ public class UserController {
 
     @PostMapping("/criar")
     public User createUser(@RequestBody User user) {
-        userRepository.save(user);
-        return user;
+        return userRepository.save(user);
     }
 
     @GetMapping("/all")
@@ -30,9 +28,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Integer id) {
-        Optional<User> user = userRepository.findById(id);
-        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public Optional<User> getUserById(@PathVariable Integer id) {
+        return userRepository.findById(id);
     }
 
     @PutMapping("/updateU")
@@ -41,7 +38,7 @@ public class UserController {
         return ResponseEntity.ok("Atualizações salvas");
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Integer id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()) {
@@ -50,4 +47,21 @@ public class UserController {
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado");
     }
+    @PostMapping("/autenticar")
+    public ResponseEntity<String> authenticateUser(@RequestBody User user) {
+        Optional<User> userOptional = userRepository.findByEmail(user.getEmail());
+
+        if (userOptional.isPresent()) {
+            User storedUser = userOptional.get();
+            if (storedUser.getSenha().equals(user.getSenha())) {
+                return ResponseEntity.ok("Autenticação bem-sucedida!");
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Senha incorreta");
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado");
+        }
+    }
+
+
 }
